@@ -1,29 +1,17 @@
-import React, { createContext, useState, useMemo } from 'react';
+import React, { createContext, useReducer, useMemo } from 'react';
 import t from 'prop-types';
+import GameReducer, { INITIAL_STATE } from './GameReducer';
 
 export const GameContext = createContext();
 
 export default function GameContextProvider({ children }) {
-  const [squares, setSquares] = useState(Array(9).fill(null));
-  const [isXNext, setIsXNext] = useState(true);
-  const [whoIsWinner, setWhoIsWinner] = useState('');
-  const [history, setHistory] = useState([]);
+  const [state, dispatch] = useReducer(GameReducer, INITIAL_STATE);
 
-  const state = useMemo(
-    () => ({
-      squares,
-      setSquares,
-      isXNext,
-      setIsXNext,
-      whoIsWinner,
-      setWhoIsWinner,
-      history,
-      setHistory,
-    }),
-    [squares, isXNext, whoIsWinner, history]
+  return (
+    <GameContext.Provider value={useMemo(() => ({ state, dispatch }), [state])}>
+      {children}
+    </GameContext.Provider>
   );
-
-  return <GameContext.Provider value={state}>{children}</GameContext.Provider>;
 }
 
 GameContextProvider.propTypes = {
